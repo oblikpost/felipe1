@@ -1,0 +1,93 @@
+<ion-content>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <img src="assets/images/Logo.jpeg" alt="Futuro TEC Logo" class="logo-img">
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button routerLink="/inicio" class="nav-button ion-hide-md-down">Início</ion-button>
+        <ion-button routerLink="/sobre" class="nav-button ion-hide-md-down">Sobre</ion-button>
+        <ion-button routerLink="/cursos" class="nav-button ion-hide-md-down">Cursos</ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button routerLink="/cadastro" class="login-button">Cadastro</ion-button>
+        <ion-button routerLink="/login" class="login-button">Login</ion-button>
+      </ion-buttons>
+      <ion-menu-button slot="end" auto-hide="false" class="ion-hide-md-up"></ion-menu-button>
+    </ion-toolbar>
+  </ion-header>
+
+ 
+    <div class="main-container">
+      <ion-grid>
+        <ion-row class="ion-align-items-center">
+          <ion-col size-md="6" size="12" class="text-col">
+            <h1>Conectando talentos da ETEC ao mercado de trabalho</h1>
+            <ion-button class="start-button">
+              Começar
+            </ion-button>
+          </ion-col>
+          <ion-col size-md="6" size="12" class="image-col">
+            <img src="assets/images/hero-image.png" alt="Imagem ilustrativa" class="hero-image">
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <br><br>
+    <h2 class="connecting-text">Conectando talentos</h2>
+    <div class="stats-section">
+      <div class="stat-item">
+        <ion-icon name="briefcase-outline" class="stat-icon"></ion-icon>
+        <p>Conexão direta <br>candidato-vaga</p>
+      </div>
+      <div class="stat-item">
+        <ion-icon name="school-outline" class="stat-icon"></ion-icon>
+        <p>Foco nos alunos<br>das ETEC's</p>
+      </div>
+      <div class="stat-item">
+        <ion-icon name="options-outline" class="stat-icon"></ion-icon>
+        <p>Diversas<br>áreas técnicas</p>
+      </div>
+    </div>
+  <app-courses-section></app-courses-section>
+
+  <ion-footer>
+    <ion-toolbar>
+      <ion-grid class="footer-grid">
+        <ion-row class="ion-align-items-start">
+          <ion-col class="footer-info">
+            <h4>FuturoTEC</h4>
+            <hr>
+            <p>Projeto de Conclusão de Curso (TCC)</p>
+            <p class="school">ETEC Albert Einstein</p>
+            <br>
+            <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
+            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+          </ion-col>
+
+          <ion-col class="footer-links">
+            <h4>Links Úteis</h4>
+            <hr>
+            <ion-list lines="none">
+              <ion-item href="#">Termos de Uso</ion-item>
+              <ion-item href="#">Política de Privacidade</ion-item>
+              <ion-item href="#">Sobre nós</ion-item>
+              <ion-item href="#">Contato</ion-item>
+            </ion-list>
+          </ion-col>
+
+          <ion-col class="footer-social">
+            <div class="footer-logo-placeholder"></div>
+            <h4>Conecte-se</h4>
+            <hr>
+            <div class="social-icons">
+              <a href="#"><ion-icon name="document"></ion-icon></a>
+              <a href="#"><ion-icon name="logo-linkedin"></ion-icon></a>
+              <a href="#"><ion-icon name="logo-twitter"></ion-icon></a>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+  </ion-footer>
+</ion-content>

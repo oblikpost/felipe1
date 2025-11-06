@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Login da Empresa</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-color-light">
+  <div class="login-container">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="12" size-md="8" size-lg="6">
+          <div class="login-form-wrapper">
+            <img src="assets/images/Logo.jpeg" alt="Futuro TEC Logo" class="login-logo">
+
+            <ion-text>
+              <h2>Acesse sua conta</h2>
+            </ion-text>
+
+            <form #loginForm="ngForm">
+              <ion-list>
+                <ion-item>
+                  <ion-input label="E-mail ou CNPJ" labelPlacement="floating" type="email" name="email" ngModel
+                    required></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Senha" labelPlacement="floating" type="password" name="password" ngModel
+                    required></ion-input>
+                </ion-item>
+              </ion-list>
+
+              <ion-button expand="block" class="login-button" [disabled]="loginForm.invalid">
+                Entrar
+              </ion-button>
+            </form>
+
+            <div class="form-links">
+              <a class="forgot-password" href="#">Esqueceu a senha?</a>
+
+              <p class="signup-link">
+                Não tem uma conta?
+                <a routerLink="/cadastro">Cadastre-se</a>
+              </p>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

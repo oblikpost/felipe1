@@ -1,0 +1,117 @@
+/* Força o ion-content (que tem a classe light)
+   a usar a cor de fundo cinza clara */
+ion-content.ion-color-light {
+  --background: #f0f4f7;
+}
+
+.login-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form-wrapper {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /*
+   * ===============================================
+   * CORREÇÃO DEFINITIVA DO MODO ESCURO
+   * ===============================================
+   */
+
+  /* Garante que o título 'Acesse sua conta' seja preto */
+  h2 {
+    font-weight: 700;
+    color: #333 !important; 
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Força o ion-item (o container do input) a ter
+     fundo branco e cor de label escura */
+  ion-item {
+    --background: #ffffff !important;
+    --color: #666 !important; /* Cor do label (E-mail, Senha) */
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+  }
+
+  /* Força o TEXTO DIGITADO a ser preto */
+  ion-input {
+    --color: #000000 !important; /* Cor do texto do input */
+  }
+
+  /* Força o LABEL FLUTUANTE a ser escuro */
+  ion-item.item-label-floating .label-floating {
+    color: #666 !important;
+  }
+
+  /* Remove a cor vermelha de erro do label, se você não quiser */
+  ion-item.ion-invalid.ion-touched .label-floating {
+     color: #666 !important; // Mantenha o label cinza
+     // ou --color: var(--ion-color-danger, #eb445a) se quiser o erro
+  }
+  
+   /* Garante que os links no rodapé do card fiquem pretos */
+  .form-links, .form-links a, .signup-link {
+    color: #333 !important;
+  }
+
+  .signup-link a {
+    color: #23586a !important;
+    font-weight: 600;
+  }
+
+  /*
+   * ===============================================
+   * FIM DA CORREÇÃO
+   * ===============================================
+   */
+}
+
+.login-logo {
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+ion-list {
+  width: 100%;
+  background: transparent;
+}
+
+.login-button {
+  --background: #23586a;
+  --color: #fff;
+  --border-radius: 5px;
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 1.1em;
+  margin-top: 20px;
+}
+
+.form-links {
+  width: 100%;
+  text-align: center;
+  margin-top: 25px;
+}
+
+.forgot-password {
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.signup-link {
+  margin-top: 15px;
+  font-size: 1em;
+
+  a {
+    text-decoration: none;
+  }
+}
