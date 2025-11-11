@@ -19,20 +19,22 @@
               <h2>Acesse sua conta</h2>
             </ion-text>
 
-            <form #loginForm="ngForm">
+            <form (ngSubmit)="login()" #loginForm="ngForm">
               <ion-list>
                 <ion-item>
-                  <ion-input label="E-mail ou CNPJ" labelPlacement="floating" type="email" name="email" ngModel
-                    required></ion-input>
+                  <ion-input label="E-mail ou CNPJ" labelPlacement="floating" type="email" name="email"
+                    [(ngModel)]="email" required>
+                  </ion-input>
                 </ion-item>
 
                 <ion-item>
-                  <ion-input label="Senha" labelPlacement="floating" type="password" name="password" ngModel
-                    required></ion-input>
+                  <ion-input label="Senha" labelPlacement="floating" type="password" name="password" [(ngModel)]="senha"
+                    required>
+                  </ion-input>
                 </ion-item>
               </ion-list>
 
-              <ion-button expand="block" class="login-button" [disabled]="loginForm.invalid">
+              <ion-button expand="block" class="login-button" type="submit" [disabled]="loginForm.invalid">
                 Entrar
               </ion-button>
             </form>

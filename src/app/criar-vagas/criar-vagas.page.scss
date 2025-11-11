@@ -1,0 +1,67 @@
+/* Copiado de src/app/cadastro/cadastro.page.scss */
+
+.login-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f4f7;
+}
+
+.login-form-wrapper {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-logo {
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+ion-list {
+  width: 100%;
+  background: transparent;
+}
+
+ion-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Estilo para o Textarea */
+ion-textarea {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  min-height: 120px;
+}
+
+.login-button {
+  --background: #23586a;
+  --color: #fff;
+  --border-radius: 5px;
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 1.1em;
+  margin-top: 20px;
+}
+
+.form-links {
+  width: 100%;
+  text-align: center;
+  margin-top: 25px;
+}

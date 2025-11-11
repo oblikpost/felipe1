@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Vagas Publicadas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/criar-vagas">
+        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ng-container *ngIf="(vagas$ | async) as vagas">
+
+      <div *ngIf="vagas.length === 0" class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>Nenhuma vaga publicada</h3>
+        <p>As vagas que você criar aparecerão aqui.</p>
+        <ion-button routerLink="/criar-vagas" fill="outline">
+          Criar minha primeira vaga
+        </ion-button>
+      </div>
+
+      <ion-row>
+        <ion-col size="12" size-md="8" size-lg="6" *ngFor="let vaga of vagas">
+
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{ vaga.titulo }}</ion-card-title>
+              <ion-card-subtitle>{{ vaga.curso }}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <p>{{ vaga.descricao }}</p>
+              <ion-item lines="none" class="contato-item">
+                <ion-icon name="mail-outline" slot="start"></ion-icon>
+                <ion-label>Contato: {{ vaga.contato }}</ion-label>
+              </ion-item>
+
+              <ion-buttons slot="end" class="card-buttons">
+                <ion-button fill="clear" color="primary" (click)="editarVaga(vaga)">
+                  <ion-icon slot="icon-only" name="pencil"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="danger" (click)="confirmarExclusao(vaga.id)">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+      </ion-row>
+
+    </ng-container>
+  </ion-grid>
+</ion-content>

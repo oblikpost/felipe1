@@ -1,0 +1,87 @@
+/* Garante o fundo cinza da página */
+ion-content {
+  --background: #f0f4f7;
+}
+
+ion-card {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+ion-card-title {
+  color: #23586a;
+  font-weight: 700;
+}
+
+ion-card-subtitle {
+  padding-top: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+ion-card-content p {
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* Estilo para o item de contato */
+.contato-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  font-size: 0.9em;
+  color: #444;
+
+  ion-icon {
+    margin-right: 8px;
+    color: var(--ion-color-primary, #23586a);
+  }
+}
+
+/* Estilos para a mensagem de "Nenhuma vaga" */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;
+  color: #777;
+
+  ion-icon {
+    font-size: 5rem;
+    color: #cccccc;
+  }
+
+  h3 {
+    font-weight: 600;
+    color: #444;
+  }
+
+  p {
+    font-size: 0.9em;
+    max-width: 250px;
+  }
+
+  ion-button {
+    margin-top: 20px;
+    --color: #23586a;
+    --border-color: #23586a;
+  }
+}
+
+.card-buttons {
+  /* Alinha os botões à direita do card */
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px; /* Dá um espaço acima dos botões */
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 1.2rem;
+  }
+}

@@ -4,51 +4,69 @@
       <ion-buttons slot="start">
         <img src="assets/images/Logo.jpeg" alt="Futuro TEC Logo" class="logo-img">
       </ion-buttons>
+
       <ion-buttons slot="end">
         <ion-button routerLink="/inicio" class="nav-button ion-hide-md-down">Início</ion-button>
         <ion-button routerLink="/sobre" class="nav-button ion-hide-md-down">Sobre</ion-button>
         <ion-button routerLink="/cursos" class="nav-button ion-hide-md-down">Cursos</ion-button>
       </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button routerLink="/cadastro" class="login-button">Cadastro</ion-button>
-        <ion-button routerLink="/login" class="login-button">Login</ion-button>
+
+      <ion-buttons slot="end" *ngIf="companyProfile$ | async as company; else loggedOutButtons">
+
+        <ion-text class="welcome-message ion-hide-md-down">
+          Olá, {{ company.nomeEmpresa }}
+        </ion-text>
+
+        <ion-button routerLink="/criar-vaga" class="nav-button">Criar Vaga</ion-button>
+
+        <ion-button routerLink="/ver-vagas" class="nav-button">Vagas</ion-button>
+
+        <ion-button (click)="logout()" class="login-button">Logout</ion-button>
+
       </ion-buttons>
+
+      <ng-template #loggedOutButtons>
+        <ion-buttons slot="end">
+          <ion-button routerLink="/cadastro" class="login-button">Cadastro</ion-button>
+          <ion-button routerLink="/login" class="login-button">Login</ion-button>
+        </ion-buttons>
+      </ng-template>
       <ion-menu-button slot="end" auto-hide="false" class="ion-hide-md-up"></ion-menu-button>
     </ion-toolbar>
   </ion-header>
 
- 
-    <div class="main-container">
-      <ion-grid>
-        <ion-row class="ion-align-items-center">
-          <ion-col size-md="6" size="12" class="text-col">
-            <h1>Conectando talentos da ETEC ao mercado de trabalho</h1>
-            <ion-button class="start-button">
-              Começar
-            </ion-button>
-          </ion-col>
-          <ion-col size-md="6" size="12" class="image-col">
-            <img src="assets/images/hero-image.png" alt="Imagem ilustrativa" class="hero-image">
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+
+  <div class="main-container">
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col size-md="6" size="12" class="text-col">
+          <h1>Conectando talentos da ETEC ao mercado de trabalho</h1>
+          <ion-button class="start-button">
+            Começar
+          </ion-button>
+        </ion-col>
+        <ion-col size-md="6" size="12" class="image-col">
+          <img src="assets/images/hero-image.png" alt="Imagem ilustrativa" class="hero-image">
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  <br><br>
+  <h2 class="connecting-text">Conectando talentos</h2>
+  <div class="stats-section">
+    <div class="stat-item">
+      <ion-icon name="briefcase-outline" class="stat-icon"></ion-icon>
+      <p>Conexão direta <br>candidato-vaga</p>
     </div>
-    <br><br>
-    <h2 class="connecting-text">Conectando talentos</h2>
-    <div class="stats-section">
-      <div class="stat-item">
-        <ion-icon name="briefcase-outline" class="stat-icon"></ion-icon>
-        <p>Conexão direta <br>candidato-vaga</p>
-      </div>
-      <div class="stat-item">
-        <ion-icon name="school-outline" class="stat-icon"></ion-icon>
-        <p>Foco nos alunos<br>das ETEC's</p>
-      </div>
-      <div class="stat-item">
-        <ion-icon name="options-outline" class="stat-icon"></ion-icon>
-        <p>Diversas<br>áreas técnicas</p>
-      </div>
+    <div class="stat-item">
+      <ion-icon name="school-outline" class="stat-icon"></ion-icon>
+      <p>Foco nos alunos<br>das ETEC's</p>
     </div>
+    <div class="stat-item">
+      <ion-icon name="options-outline" class="stat-icon"></ion-icon>
+      <p>Diversas<br>áreas técnicas</p>
+    </div>
+  </div>
   <app-courses-section></app-courses-section>
 
   <ion-footer>
@@ -62,7 +80,8 @@
             <p class="school">ETEC Albert Einstein</p>
             <br>
             <p class="copyright">© 2025 FuturoTEC. Todos os direitos reservados.</p>
-            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly Mendes, Uillian Oliveira e Felipe Cardoso.</p>
+            <p class="authors">Desenvolvido por: Nátaly Lima, Gustavo Fonseca, Eduarda Marques, Amanda Silva, Gabrielly
+              Mendes, Uillian Oliveira e Felipe Cardoso.</p>
           </ion-col>
 
           <ion-col class="footer-links">
