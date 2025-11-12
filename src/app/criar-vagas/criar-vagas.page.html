@@ -23,34 +23,47 @@
 
                 <ion-item>
                   <ion-input label="Título da Vaga" labelPlacement="floating" type="text" name="titulo"
-                    [(ngModel)]="vagaData.titulo" required>
+                    [(ngModel)]="vagaData.titulo" required #titulo="ngModel">
                   </ion-input>
                 </ion-item>
+                <div *ngIf="titulo.invalid && (titulo.dirty || titulo.touched)" class="validation-error">
+                  <p *ngIf="titulo.errors?.['required']">O título é obrigatório.</p>
+                </div>
 
                 <ion-item>
                   <ion-select label="Curso Requerido" labelPlacement="floating" name="curso"
-                    [(ngModel)]="vagaData.curso" required>
+                    [(ngModel)]="vagaData.curso" required #curso="ngModel">
                     <ion-select-option *ngFor="let curso of cursosList" [value]="curso">
                       {{ curso }}
                     </ion-select-option>
                   </ion-select>
                 </ion-item>
+                <div *ngIf="curso.invalid && (curso.dirty || curso.touched)" class="validation-error">
+                  <p *ngIf="curso.errors?.['required']">Deve selecionar um curso.</p>
+                </div>
 
                 <ion-item>
                   <ion-textarea label="Descrição da Vaga" labelPlacement="floating" name="descricao"
-                    [(ngModel)]="vagaData.descricao" required autoGrow="true" [minlength]="20">
+                    [(ngModel)]="vagaData.descricao" required  #descricao="ngModel" autoGrow="true">
                   </ion-textarea>
                 </ion-item>
+                <div *ngIf="descricao.invalid && (descricao.dirty || descricao.touched)" class="validation-error">
+                  <p *ngIf="descricao.errors?.['required']">A descrição é obrigatória.</p>
+               
+                </div>
 
                 <ion-item>
                   <ion-input label="Contato (E-mail ou Telefone)" labelPlacement="floating" type="text" name="contato"
-                    [(ngModel)]="vagaData.contato" required>
+                    [(ngModel)]="vagaData.contato" required #contato="ngModel">
                   </ion-input>
                 </ion-item>
+                <div *ngIf="contato.invalid && (contato.dirty || contato.touched)" class="validation-error">
+                  <p *ngIf="contato.errors?.['required']">O contato é obrigatório.</p>
+                </div>
 
               </ion-list>
 
-              <ion-button expand="block" class="login-button" type="submit">
+              <ion-button expand="block" class="login-button" type="submit" [disabled]="!vagaForm.valid">
                 {{ isEditMode ? 'Salvar Alterações' : 'Publicar Vaga' }}
               </ion-button>
             </form>

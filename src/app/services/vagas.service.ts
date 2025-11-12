@@ -1,74 +1,136 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router'; // 1. Importe o Router
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { switchMap, first } from 'rxjs/operators';
+import {
+  Firestore,
+  collection,
+  addDoc,
+  collectionData,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  docData,
+} from '@angular/fire/firestore';
+import { AuthService, CompanyProfile } from './auth.service';
 
-// Interface Vaga (já com ID)
+// Interface Vaga (COM CURSO)
 export interface Vaga {
   id: string;
   titulo: string;
-  curso: string;
+  curso: string; // <-- ADICIONADO AQUI
   descricao: string;
   contato: string;
+  empresaNome: string;
+  empresaUid: string;
+  criadaEm: Date;
 }
+
+// Omit<Vaga, 'id'> significa "tudo da Vaga, exceto o id"
+export type VagaInput = Omit<
+  Vaga,
+  'id' | 'empresaNome' | 'empresaUid' | 'criadaEm'
+>;
 
 @Injectable({
   providedIn: 'root',
 })
 export class VagasService {
-  private vagas = new BehaviorSubject<Vaga[]>([]);
-  public vagas$: Observable<Vaga[]> = this.vagas.asObservable();
+  // Injeção moderna de serviços
+  private firestore: Firestore = inject(Firestore);
+  private authService: AuthService = inject(AuthService);
+  private router: Router = inject(Router);
 
-  // 2. NOVO: "Memória" para a vaga que está sendo editada
+  // Observable que armazena a lista de vagas da empresa logada
+  public vagas$: Observable<Vaga[]>;
+
+  // "Memória" para a vaga que está sendo editada
   private vagaParaEditar = new BehaviorSubject<Vaga | null>(null);
   public vagaParaEditar$ = this.vagaParaEditar.asObservable();
 
-  // 3. Injete o Router
-  constructor(private router: Router) {}
-
-  // 4. Método para adicionar (não precisa mais de Omit)
-  addVaga(novaVaga: Omit<Vaga, 'id'>) {
-    const listaAtual = this.vagas.getValue();
-    const idUnico = new Date().getTime().toString();
-    const vagaComId: Vaga = { ...novaVaga, id: idUnico };
-    const novaLista = [vagaComId, ...listaAtual];
-    this.vagas.next(novaLista);
+  constructor() {
+    // Este observable agora reage ao estado de autenticação
+    this.vagas$ = this.authService.isLoggedIn$.pipe(
+      switchMap((isLoggedIn) => {
+        if (isLoggedIn && this.authService.auth.currentUser) {
+          const user = this.authService.auth.currentUser;
+          // Se está logado, busca as vagas ONDE o empresaUid é igual ao UID do user
+          const vagasCollection = collection(this.firestore, 'vagas');
+          const q = query(
+            vagasCollection,
+            where('empresaUid', '==', user.uid),
+            orderBy('criadaEm', 'desc') // Ordena pelas mais recentes
+          );
+          // collectionData já retorna um Observable<Vaga[]>
+          return collectionData(q, { idField: 'id' }) as Observable<Vaga[]>;
+        } else {
+          // Se não está logado, retorna um array vazio
+          return of([]);
+        }
+      })
+    );
   }
 
-  // 5. NOVO MÉTODO: Carrega a vaga para edição
-  carregarVagaParaEdicao(id: string) {
-    // Acha a vaga na lista
-    const vagaEncontrada = this.vagas.getValue().find((v) => v.id === id);
-    if (vagaEncontrada) {
-      // Coloca a vaga na "memória" (BehaviorSubject)
-      this.vagaParaEditar.next(vagaEncontrada);
-      // Navega para a página de criação
-      this.router.navigateByUrl('/criar-vagas');
+  // Adiciona uma nova vaga
+  async addVaga(novaVaga: VagaInput) {
+    // 1. Pega o perfil da empresa logada (do authService)
+    const profile = await this.authService.companyProfile$
+      .pipe(first())
+      .toPromise();
+    const user = this.authService.auth.currentUser;
+
+    if (!profile || !user) {
+      throw new Error('Usuário não autenticado ou perfil não encontrado.');
     }
+
+    // 2. Monta o objeto completo da vaga
+    // O ...novaVaga agora já inclui o 'curso'
+    const vagaCompleta = {
+      ...novaVaga,
+      empresaNome: profile.nomeEmpresa,
+      empresaUid: user.uid,
+      criadaEm: new Date(),
+    };
+
+    // 3. Adiciona à coleção 'vagas'
+    const vagasCollection = collection(this.firestore, 'vagas');
+    return await addDoc(vagasCollection, vagaCompleta);
   }
 
-  // 6. NOVO MÉTODO: Limpa a "memória" de edição
+  // Carrega a vaga para edição
+  carregarVagaParaEdicao(id: string) {
+    const vagaDocRef = doc(this.firestore, `vagas/${id}`);
+
+    (docData(vagaDocRef, { idField: 'id' }) as Observable<Vaga>)
+      .pipe(first())
+      .subscribe((vagaEncontrada) => {
+        if (vagaEncontrada) {
+          this.vagaParaEditar.next(vagaEncontrada);
+          this.router.navigateByUrl('/criar-vagas');
+        } else {
+          console.error('Vaga não encontrada para edição.');
+        }
+      });
+  }
+
+  // Limpa a "memória" de edição
   limparEdicao() {
     this.vagaParaEditar.next(null);
   }
 
-  // 7. MÉTODO ATUALIZADO: Implementa a lógica de edição
-  editarVaga(vagaAtualizada: Vaga) {
-    const lista = this.vagas.getValue();
-
-    // Encontra o índice da vaga antiga
-    const index = lista.findIndex((v) => v.id === vagaAtualizada.id);
-
-    if (index > -1) {
-      // Substitui a vaga antiga pela nova
-      lista[index] = vagaAtualizada;
-      // Publica a lista com a vaga atualizada
-      this.vagas.next([...lista]);
-    }
+  // Edita uma vaga existente
+  async editarVaga(vagaAtualizada: Vaga) {
+    const vagaDocRef = doc(this.firestore, `vagas/${vagaAtualizada.id}`);
+    const { id, ...data } = vagaAtualizada;
+    return await updateDoc(vagaDocRef, data);
   }
 
-  excluirVaga(idParaExcluir: string) {
-    const listaAtual = this.vagas.getValue();
-    const novaLista = listaAtual.filter((vaga) => vaga.id !== idParaExcluir);
-    this.vagas.next(novaLista);
+  // Exclui uma vaga
+  async excluirVaga(idParaExcluir: string) {
+    const vagaDocRef = doc(this.firestore, `vagas/${idParaExcluir}`);
+    return await deleteDoc(vagaDocRef);
   }
 }

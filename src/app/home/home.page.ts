@@ -22,15 +22,17 @@ import { Observable } from 'rxjs';
   ],
 })
 export class HomePage {
-  // Declaramos o Observable que o HTML vai usar
+  // Declaramos os Observables que o HTML vai usar
   companyProfile$: Observable<CompanyProfile | null>;
+  isLoggedIn$: Observable<boolean>; // <-- ADICIONADO
 
   constructor(
     private authService: AuthService,
     private navCtrl: NavController
   ) {
-    // Atribuímos o observable do serviço à nossa variável local
+    // Atribuímos os observables do serviço às nossas variáveis locais
     this.companyProfile$ = this.authService.companyProfile$;
+    this.isLoggedIn$ = this.authService.isLoggedIn$; // <-- ADICIONADO
   }
 
   // Função de logout

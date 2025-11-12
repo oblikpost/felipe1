@@ -6,11 +6,13 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-// Importações do Firebase (modo COMPAT)
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore'; // <-- Esta linha é a solução
+// 1. Importar a configuração do environment
 import { environment } from '../environments/environment';
+
+// 2. Importar os novos providers modulares
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,12 +21,19 @@ import { environment } from '../environments/environment';
     IonicModule.forRoot(),
     AppRoutingModule,
 
-    // Configuração do Firebase (usando os módulos de COMPATIBILIDADE)
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireAuthModule,
-    AngularFirestoreModule, // <-- Esta linha é a solução
+    // 3. REMOVA os módulos 'compat' daqui:
+    // AngularFireModule.initializeApp(environment.firebaseConfig), // Removido
+    // AngularFireAuthModule, // Removido
+    // AngularFirestoreModule, // Removido
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+
+    // 4. Adicione os providers modulares AQUI:
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

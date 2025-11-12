@@ -11,16 +11,14 @@
         <ion-button routerLink="/cursos" class="nav-button ion-hide-md-down">Cursos</ion-button>
       </ion-buttons>
 
-      <ion-buttons slot="end" *ngIf="companyProfile$ | async as company; else loggedOutButtons">
+      <ion-buttons slot="end" *ngIf="isLoggedIn$ | async; else loggedOutButtons">
 
-        <ion-text class="welcome-message ion-hide-md-down">
+        <ion-text class="welcome-message ion-hide-md-down" *ngIf="companyProfile$ | async as company">
           Olá, {{ company.nomeEmpresa }}
         </ion-text>
 
-        <ion-button routerLink="/criar-vaga" class="nav-button">Criar Vaga</ion-button>
-
+        <ion-button routerLink="/criar-vagas" class="nav-button">Criar Vaga</ion-button>
         <ion-button routerLink="/ver-vagas" class="nav-button">Vagas</ion-button>
-
         <ion-button (click)="logout()" class="login-button">Logout</ion-button>
 
       </ion-buttons>

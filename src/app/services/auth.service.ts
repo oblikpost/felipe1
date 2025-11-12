@@ -1,9 +1,26 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import firebase from 'firebase/compat/app';
+import { Injectable, inject } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+
+// Importar as novas funções modulares do Firebase
+import {
+  Auth,
+  authState,
+  User,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from '@angular/fire/auth';
+import {
+  Firestore,
+  doc,
+  docData,
+  setDoc,
+  getDoc,
+  collection,
+  addDoc,
+  DocumentReference,
+} from '@angular/fire/firestore';
 
 export interface CompanyProfile {
   uid: string;
@@ -16,20 +33,25 @@ export interface CompanyProfile {
   providedIn: 'root',
 })
 export class AuthService {
-  companyProfile$: Observable<CompanyProfile | null>;
-  isLoggedIn$: Observable<boolean>;
+  // 3. Usar inject() no topo da classe
+  public auth: Auth = inject(Auth); // <-- CORREÇÃO: Alterado de private para public
+  private firestore: Firestore = inject(Firestore);
 
-  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore) {
-    // Inicialização DENTRO do constructor (Corrige o NG0203)
-    this.isLoggedIn$ = this.afAuth.authState.pipe(map((user) => !!user));
+  public companyProfile$: Observable<CompanyProfile | null>;
+  public isLoggedIn$: Observable<boolean>;
 
-    this.companyProfile$ = this.afAuth.authState.pipe(
+  // 4. O construtor agora pode ficar (quase) vazio
+  constructor() {
+    // 5. Inicializar as propriedades usando as novas funções
+    this.isLoggedIn$ = authState(this.auth).pipe(map((user) => !!user));
+
+    this.companyProfile$ = authState(this.auth).pipe(
       switchMap((user) => {
         if (user) {
-          return this.afs
-            .doc<CompanyProfile>(`empresas/${user.uid}`)
-            .valueChanges()
-            .pipe(map((profile) => profile || null));
+          // 6. Usar a nova sintaxe do Firestore
+          const userDocRef = doc(this.firestore, `empresas/${user.uid}`);
+          // docData já trata o 'valueChanges' e o mapeamento
+          return docData(userDocRef) as Observable<CompanyProfile | null>;
         } else {
           return of(null);
         }
@@ -37,7 +59,7 @@ export class AuthService {
     );
   }
 
-  // Função de Registro
+  // Função de Registro (Refatorada)
   async registerCompany(
     email: string,
     pass: string,
@@ -45,7 +67,9 @@ export class AuthService {
     cnpj: string
   ) {
     try {
-      const userCredential = await this.afAuth.createUserWithEmailAndPassword(
+      // 7. Usar a função modular
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
         email,
         pass
       );
@@ -55,8 +79,9 @@ export class AuthService {
       }
 
       const user = userCredential.user;
-      // Esta é a linha (aprox. 63) que falha se o AppModule estiver errado
-      const companyDocRef = this.afs.doc(`empresas/${user.uid}`);
+
+      // 8. Usar 'doc()' e 'setDoc()'
+      const companyDocRef = doc(this.firestore, `empresas/${user.uid}`);
 
       const profile: CompanyProfile = {
         uid: user.uid,
@@ -65,7 +90,7 @@ export class AuthService {
         cnpj: cnpj,
       };
 
-      await companyDocRef.set(profile);
+      await setDoc(companyDocRef, profile); // Usar setDoc
 
       return userCredential;
     } catch (e) {
@@ -74,44 +99,20 @@ export class AuthService {
     }
   }
 
-  // Função de Login
+  // Função de Login (Refatorada)
   async login(email: string, pass: string) {
     try {
-      return await this.afAuth.signInWithEmailAndPassword(email, pass);
+      return await signInWithEmailAndPassword(this.auth, email, pass);
     } catch (e) {
       console.error('Erro no AuthService (login):', e);
       throw e;
     }
   }
 
-  // Função de Logout
+  // Função de Logout (Refatorada)
   logout() {
-    return from(this.afAuth.signOut());
+    return from(signOut(this.auth));
   }
 
-  // Função para Adicionar Vaga
-  async addVaga(vagaData: { titulo: string; descricao: string; tipo: string }) {
-    const user = await this.afAuth.currentUser;
-    if (!user) {
-      throw new Error('Usuário não autenticado.');
-    }
-
-    const companyDoc = this.afs.doc(`empresas/${user.uid}`);
-    const companySnapshot = await companyDoc.get().toPromise();
-    const companyData = companySnapshot?.data() as CompanyProfile | undefined;
-
-    if (!companyData) {
-      throw new Error('Dados da empresa não encontrados.');
-    }
-
-    const vagaCompleta = {
-      ...vagaData,
-      empresaNome: companyData.nomeEmpresa,
-      empresaUid: user.uid,
-      criadaEm: new Date(),
-    };
-
-    const vagasCollection = this.afs.collection('vagas');
-    return await vagasCollection.add(vagaCompleta);
-  }
+  // A função addVaga foi removida daqui e movida para o VagasService.
 }

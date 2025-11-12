@@ -29,6 +29,18 @@ const routes: Routes = [
     loadComponent: () =>
       import('./cursos/cursos.page').then((m) => m.CursosPage),
   },
+  // ROTA ADICIONADA:
+  {
+    path: 'criar-vagas',
+    loadComponent: () =>
+      import('./criar-vagas/criar-vagas.page').then((m) => m.CriarVagasPage),
+  },
+  // ROTA ADICIONADA:
+  {
+    path: 'ver-vagas',
+    loadComponent: () =>
+      import('./ver-vagas/ver-vagas.page').then((m) => m.VerVagasPage),
+  },
 ];
 
 @NgModule({

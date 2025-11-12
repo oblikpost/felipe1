@@ -1,10 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'; // 1. Importe OnDestroy
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+// 1. Importar LoadingController e AlertController
+import {
+  IonicModule,
+  NavController,
+  LoadingController,
+  AlertController,
+} from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { VagasService, Vaga } from '../services/vagas.service';
-import { Subscription } from 'rxjs'; // 2. Importe Subscription
+import { VagasService, Vaga, VagaInput } from '../services/vagas.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-criar-vagas',
@@ -13,21 +19,17 @@ import { Subscription } from 'rxjs'; // 2. Importe Subscription
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, RouterModule],
 })
-// 3. Implemente OnDestroy
 export class CriarVagasPage implements OnInit, OnDestroy {
-  // 4. Modelo de dados (agora pode ter um ID)
   public vagaData: Partial<Vaga> = {
-    // Usamos Partial pois o ID só existe na edição
     titulo: '',
     curso: '',
     descricao: '',
-    contato: 'contato@futurotec.com',
+    contato: '',
   };
 
-  // 5. Novas variáveis de controle
   public isEditMode = false;
   private idVagaAtual: string | null = null;
-  private editSub: Subscription | undefined; // Para gerenciar a inscrição
+  private editSub: Subscription | undefined;
 
   public cursosList = [
     'Administração',
@@ -42,19 +44,18 @@ export class CriarVagasPage implements OnInit, OnDestroy {
 
   constructor(
     private navCtrl: NavController,
-    private vagasService: VagasService
+    private vagasService: VagasService,
+    private loadingCtrl: LoadingController, // 2. Injetar LoadingController
+    private alertCtrl: AlertController // 3. Injetar AlertController
   ) {}
 
   ngOnInit() {
-    // 6. Ouve o serviço para saber se é modo de edição
     this.editSub = this.vagasService.vagaParaEditar$.subscribe((vaga) => {
       if (vaga) {
-        // MODO EDIÇÃO
         this.isEditMode = true;
         this.idVagaAtual = vaga.id;
-        this.vagaData = { ...vaga }; // Preenche o formulário com dados da vaga
+        this.vagaData = { ...vaga };
       } else {
-        // MODO CRIAÇÃO
         this.isEditMode = false;
         this.idVagaAtual = null;
         this.resetarFormulario();
@@ -62,30 +63,50 @@ export class CriarVagasPage implements OnInit, OnDestroy {
     });
   }
 
-  // 7. NOVO MÉTODO: Limpa o componente ao sair
   ngOnDestroy() {
-    // Desinscreve-se para evitar vazamento de memória
     if (this.editSub) {
       this.editSub.unsubscribe();
     }
-    // Limpa a vaga da "memória" do serviço
     this.vagasService.limparEdicao();
   }
 
-  // 8. Renomeado de criarVaga para salvarVaga
-  salvarVaga() {
-    if (this.isEditMode && this.idVagaAtual) {
-      // Lógica de EDIÇÃO
-      console.log('Salvando alterações na vaga:', this.idVagaAtual);
-      this.vagasService.editarVaga(this.vagaData as Vaga);
-    } else {
-      // Lógica de CRIAÇÃO
-      console.log('Publicando nova vaga...');
-      this.vagasService.addVaga(this.vagaData as Omit<Vaga, 'id'>);
-    }
+  // 4. Função salvarVaga (ATUALIZADA)
+  async salvarVaga() {
+    // 5. Mostrar o loading
+    const loading = await this.loadingCtrl.create({
+      message: this.isEditMode
+        ? 'A salvar alterações...'
+        : 'A publicar vaga...',
+    });
+    await loading.present();
 
-    this.resetarFormulario();
-    this.navCtrl.navigateBack('/ver-vagas'); // Volta para a lista
+    try {
+      if (this.isEditMode && this.idVagaAtual) {
+        // Lógica de EDIÇÃO
+        await this.vagasService.editarVaga(this.vagaData as Vaga);
+      } else {
+        // Lógica de CRIAÇÃO
+        const vagaInput: VagaInput = {
+          titulo: this.vagaData.titulo!,
+          curso: this.vagaData.curso!,
+          descricao: this.vagaData.descricao!,
+          contato: this.vagaData.contato!,
+        };
+        await this.vagasService.addVaga(vagaInput);
+      }
+
+      await loading.dismiss();
+      this.resetarFormulario();
+      this.navCtrl.navigateBack('/ver-vagas'); // Volta para a lista
+    } catch (e) {
+      // 6. Tratar o erro
+      await loading.dismiss();
+      this.mostrarAlerta(
+        'Erro ao Salvar',
+        'Não foi possível salvar a vaga. Verifique as suas permissões no Firestore.'
+      );
+      console.error('Erro ao salvar vaga:', e);
+    }
   }
 
   resetarFormulario() {
@@ -93,7 +114,17 @@ export class CriarVagasPage implements OnInit, OnDestroy {
       titulo: '',
       curso: '',
       descricao: '',
-      contato: 'contato@futurotec.com',
+      contato: '',
     };
+  }
+
+  // 7. Função de alerta genérico
+  async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 }
