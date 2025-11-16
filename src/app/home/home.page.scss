@@ -334,7 +334,8 @@ ion-slides {
 .welcome-message {
   color: #333; 
   font-weight: 500;
-  margin-right: 15px;
+  // margin-right: 15px; // <-- MUDANÇA AQUI
+  margin-left: 20px; // <-- MUDANÇA AQUI
   font-size: 1.1em;
   white-space: nowrap; 
 }

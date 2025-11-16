@@ -3,6 +3,11 @@
     <ion-toolbar>
       <ion-buttons slot="start">
         <img src="assets/images/Logo.jpeg" alt="Futuro TEC Logo" class="logo-img">
+
+        <ion-text class="welcome-message ion-hide-md-down"
+          *ngIf="(isLoggedIn$ | async) && (companyProfile$ | async) as company">
+          Olá, {{ company.nomeEmpresa }}
+        </ion-text>
       </ion-buttons>
 
       <ion-buttons slot="end">
@@ -12,10 +17,6 @@
       </ion-buttons>
 
       <ion-buttons slot="end" *ngIf="isLoggedIn$ | async; else loggedOutButtons">
-
-        <ion-text class="welcome-message ion-hide-md-down" *ngIf="companyProfile$ | async as company">
-          Olá, {{ company.nomeEmpresa }}
-        </ion-text>
 
         <ion-button routerLink="/criar-vagas" class="nav-button">Criar Vaga</ion-button>
         <ion-button routerLink="/ver-vagas" class="nav-button">Vagas</ion-button>

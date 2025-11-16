@@ -37,3 +37,9 @@
   height: 60px;
   object-fit: contain;
 }
+
+/* Adicionado para a barra de rolagem horizontal */
+.slider-wrapper {
+  overflow-x: auto;
+  padding-bottom: 10px; /* Adiciona um espaço para a barra de rolagem não colar nos cards */
+}
